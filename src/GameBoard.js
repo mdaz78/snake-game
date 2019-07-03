@@ -14,9 +14,36 @@ export default class GameBoard extends Component {
   componentDidMount() {
     const canvas = this.refs.canvas;
     const context = canvas.getContext("2d");
-    setInterval(() => this.moveSnake(context), 500);
+    this.interval = setInterval(() => this.moveSnake(context), 100);
     document.addEventListener("keydown", this.handleKeyDown);
   }
+
+  componentWillUpdate() {
+    if (this.gameover()) {
+      clearInterval(this.interval);
+    }
+  }
+
+  gameover = () => {
+    const snakeCoords = [...this.state.snakeCoords];
+    const head = snakeCoords[snakeCoords.length - 1];
+    const [x, y] = head;
+    console.log(head);
+    // boundary collision
+    if (x >= this.state.canvasWidth || x < 0) {
+      this.stopGame();
+      return;
+    }
+    if (y >= this.state.canvasHeight || y < 0) {
+      this.stopGame();
+      return;
+    }
+    // TODO: check for body collision
+  };
+
+  stopGame = () => {
+    clearInterval(this.interval);
+  };
 
   moveSnake = context => {
     const snakeCoords = [...this.state.snakeCoords];
