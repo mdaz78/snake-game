@@ -6,7 +6,7 @@ export default class GameBoard extends Component {
     this.state = {
       canvasWidth: "300",
       canvasHeight: "300",
-      snakeCoords: [[0, 0], [10, 0], [20, 0]],
+      snakeCoords: [[0, 0], [10, 0], [20, 0], [30, 0], [40, 0]],
       direction: "RIGHT"
     };
   }
@@ -28,7 +28,6 @@ export default class GameBoard extends Component {
     const snakeCoords = [...this.state.snakeCoords];
     const head = snakeCoords[snakeCoords.length - 1];
     const [x, y] = head;
-    console.log(head);
     // boundary collision
     if (x >= this.state.canvasWidth || x < 0) {
       this.stopGame();
@@ -38,7 +37,20 @@ export default class GameBoard extends Component {
       this.stopGame();
       return;
     }
-    // TODO: check for body collision
+
+    // check for body collision, if the occurence of same cord is
+    // more than once than the snake has collided with itself
+    let occurence = 0;
+    for (let outerIndex = 0; outerIndex < snakeCoords.length; outerIndex++) {
+      const [xOfCoord, yOfCoord] = snakeCoords[outerIndex];
+      if (xOfCoord === x && yOfCoord === y) {
+        occurence += 1;
+      }
+    }
+
+    if (occurence > 1) {
+      this.stopGame();
+    }
   };
 
   stopGame = () => {
