@@ -26,7 +26,7 @@ export default class GameBoard extends Component {
   componentDidMount() {
     const canvas = this.refs.canvas;
     const context = canvas.getContext("2d");
-    this.interval = setInterval(() => this.moveSnake(context), 40);
+    this.interval = setInterval(() => this.moveSnake(context), 35);
     document.addEventListener("keydown", this.handleKeyDown);
   }
 
