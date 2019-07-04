@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import Score from "./Score";
+import "./GameBoard.css";
 
 const getRandomCoords = () => {
-  const max = 290;
+  const max = 490;
   const min = 10;
   const x = Math.floor((Math.random() * (max - min + 1) + min) / 10) * 10;
   const y = Math.floor((Math.random() * (max - min + 1) + min) / 10) * 10;
@@ -13,8 +14,8 @@ export default class GameBoard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      canvasWidth: "300",
-      canvasHeight: "300",
+      canvasWidth: "500",
+      canvasHeight: "500",
       snakeCoords: [[0, 0], [10, 0], [20, 0], [30, 0], [40, 0]],
       direction: "RIGHT",
       foodCoords: getRandomCoords(),
@@ -174,10 +175,10 @@ export default class GameBoard extends Component {
 
   render() {
     const style = {
-      border: "1px solid #777"
+      border: "5px solid #777"
     };
     return (
-      <div>
+      <div className="game">
         <Score currentScore={this.state.score} />
         <canvas
           width={this.state.canvasWidth}
