@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Score from "./Score";
 
 const getRandomCoords = () => {
   const max = 300;
@@ -35,10 +36,11 @@ export default class GameBoard extends Component {
       if (this.checkIfFoodIsEaten()) {
         // increase score
         const score = this.state.score;
+        const updatedScore = score + 10;
         const snakeCoords = [...this.state.snakeCoords];
         snakeCoords.push(this.state.foodCoords);
         this.setState({
-          score: score + 1,
+          score: updatedScore,
           foodCoords: getRandomCoords(),
           snakeCoords: snakeCoords
         });
@@ -181,6 +183,7 @@ export default class GameBoard extends Component {
     };
     return (
       <div>
+        <Score currentScore={this.state.score} />
         <canvas
           width={this.state.canvasWidth}
           height={this.state.canvasHeight}
