@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Score from "./Score";
 
 const getRandomCoords = () => {
-  const max = 300;
+  const max = 290;
   const min = 10;
   const x = Math.floor((Math.random() * (max - min + 1) + min) / 10) * 10;
   const y = Math.floor((Math.random() * (max - min + 1) + min) / 10) * 10;
@@ -25,7 +25,7 @@ export default class GameBoard extends Component {
   componentDidMount() {
     const canvas = this.refs.canvas;
     const context = canvas.getContext("2d");
-    this.interval = setInterval(() => this.moveSnake(context), 50);
+    this.interval = setInterval(() => this.moveSnake(context), 40);
     document.addEventListener("keydown", this.handleKeyDown);
   }
 
@@ -34,7 +34,6 @@ export default class GameBoard extends Component {
       clearInterval(this.interval);
     } else {
       if (this.checkIfFoodIsEaten()) {
-        // increase score
         const score = this.state.score;
         const updatedScore = score + 10;
         const snakeCoords = [...this.state.snakeCoords];
@@ -74,19 +73,15 @@ export default class GameBoard extends Component {
       return;
     }
 
-    // check for body collision, if the occurence of same cord is
-    // more than once than the snake has collided with itself
-    // let occurence = 0;
-    // for (let outerIndex = 0; outerIndex < snakeCoords.length; outerIndex++) {
-    //   const [xOfCoord, yOfCoord] = snakeCoords[outerIndex];
-    //   if (xOfCoord === x && yOfCoord === y) {
-    //     occurence += 1;
-    //   }
-    // }
-
-    // if (occurence > 1) {
-    //   this.stopGame();
-    // }
+    // check for body collision
+    snakeCoords.pop();
+    snakeCoords.pop();
+    for (let i = 0; i < snakeCoords.length; i++) {
+      const [xToCheck, yToCheck] = snakeCoords[i];
+      if (xToCheck === x && yToCheck === y) {
+        this.stopGame();
+      }
+    }
   };
 
   stopGame = () => {
