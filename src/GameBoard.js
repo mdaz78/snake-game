@@ -1,5 +1,13 @@
 import React, { Component } from "react";
 
+const getRandomCoords = () => {
+  const max = 300;
+  const min = 10;
+  const x = Math.floor((Math.random() * (max - min + 1) + min) / 10) * 10;
+  const y = Math.floor((Math.random() * (max - min + 1) + min) / 10) * 10;
+  return [x, y];
+};
+
 export default class GameBoard extends Component {
   constructor(props) {
     super(props);
@@ -7,22 +15,48 @@ export default class GameBoard extends Component {
       canvasWidth: "300",
       canvasHeight: "300",
       snakeCoords: [[0, 0], [10, 0], [20, 0], [30, 0], [40, 0]],
-      direction: "RIGHT"
+      direction: "RIGHT",
+      foodCoords: getRandomCoords(),
+      score: 0
     };
   }
 
   componentDidMount() {
     const canvas = this.refs.canvas;
     const context = canvas.getContext("2d");
-    this.interval = setInterval(() => this.moveSnake(context), 100);
+    this.interval = setInterval(() => this.moveSnake(context), 50);
     document.addEventListener("keydown", this.handleKeyDown);
   }
 
-  componentWillUpdate() {
+  componentDidUpdate() {
     if (this.gameover()) {
       clearInterval(this.interval);
+    } else {
+      if (this.checkIfFoodIsEaten()) {
+        // increase score
+        const score = this.state.score;
+        const snakeCoords = [...this.state.snakeCoords];
+        snakeCoords.push(this.state.foodCoords);
+        this.setState({
+          score: score + 1,
+          foodCoords: getRandomCoords(),
+          snakeCoords: snakeCoords
+        });
+      }
     }
   }
+
+  checkIfFoodIsEaten = () => {
+    const snakeCoords = [...this.state.snakeCoords];
+    const head = snakeCoords[snakeCoords.length - 1];
+    const [snakeX, snakeY] = head;
+    const [foodX, foodY] = this.state.foodCoords;
+    if (snakeX === foodX && snakeY === foodY) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   gameover = () => {
     const snakeCoords = [...this.state.snakeCoords];
@@ -40,17 +74,17 @@ export default class GameBoard extends Component {
 
     // check for body collision, if the occurence of same cord is
     // more than once than the snake has collided with itself
-    let occurence = 0;
-    for (let outerIndex = 0; outerIndex < snakeCoords.length; outerIndex++) {
-      const [xOfCoord, yOfCoord] = snakeCoords[outerIndex];
-      if (xOfCoord === x && yOfCoord === y) {
-        occurence += 1;
-      }
-    }
+    // let occurence = 0;
+    // for (let outerIndex = 0; outerIndex < snakeCoords.length; outerIndex++) {
+    //   const [xOfCoord, yOfCoord] = snakeCoords[outerIndex];
+    //   if (xOfCoord === x && yOfCoord === y) {
+    //     occurence += 1;
+    //   }
+    // }
 
-    if (occurence > 1) {
-      this.stopGame();
-    }
+    // if (occurence > 1) {
+    //   this.stopGame();
+    // }
   };
 
   stopGame = () => {
@@ -63,11 +97,12 @@ export default class GameBoard extends Component {
     const updatedXandY = this.updateXandYusingDirection(head);
     const [x, y] = updatedXandY;
     snakeCoords.push([x, y]);
-    const coordsToRemove = snakeCoords.shift();
+    snakeCoords.shift();
     this.setState({
       snakeCoords: snakeCoords
     });
-    this.drawSnake(context, coordsToRemove);
+    this.drawSnake(context);
+    this.drawFood(context);
   };
 
   handleKeyDown = e => {
@@ -128,11 +163,16 @@ export default class GameBoard extends Component {
     }
   };
 
-  drawSnake = (context, [xToRemove]) => {
+  drawSnake = context => {
     context.clearRect(0, 0, this.state.canvasWidth, this.state.canvasHeight);
     this.state.snakeCoords.forEach(([x, y]) => {
       context.fillRect(x, y, 10, 10);
     });
+  };
+
+  drawFood = context => {
+    const [x, y] = this.state.foodCoords;
+    context.fillRect(x, y, 10, 10);
   };
 
   render() {
